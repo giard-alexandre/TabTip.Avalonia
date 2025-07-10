@@ -1,0 +1,6 @@
+﻿<Solution>
+  <Folder Name="/src/">
+    <Project Path="src\TabTip.Avalonia\TabTip.Avalonia.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/_items/" />
+</Solution>
