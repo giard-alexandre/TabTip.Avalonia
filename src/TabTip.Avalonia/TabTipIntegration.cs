@@ -10,12 +10,18 @@ namespace TabTip.Avalonia;
 
 public class TabTipIntegration
 {
-    private static readonly ITabTip _tabTip;
-    private static readonly Dictionary<IInputPane, TopLevel> tlMap = new();
-    private static readonly Subject<(InputElement InputElement, bool DesiredState)> keyboard = new();
-    private static bool _alreadyDone;
+    private readonly Dictionary<IInputPane, TopLevel> tlMap = new();
+    private readonly Subject<(InputElement InputElement, bool DesiredState)> keyboard = new();
+    private bool _alreadyDone;
 
-    public static void Integrate()
+    private readonly ITabTip _tabTip;
+
+    public TabTipIntegration(ITabTipFactory? factory)
+    {
+        _tabTip = factory?.Create() ?? new DefaultTabTipFactory().Create();
+    }
+
+    public void Integrate()
     {
         if (_alreadyDone)
             return;
@@ -44,14 +50,15 @@ public class TabTipIntegration
         InputElement.PointerPressedEvent.AddClassHandler<TextBox>((t, e) =>
         {
             // if (e.Pointer.Type == PointerType.Touch)
-                keyboard.OnNext((t, true));
-            
+            keyboard.OnNext((t, true));
+
             // TODO: Restore below (probably)
             // if (e.Pointer.Type == PointerType.Touch)
             //     keyboard.OnNext((t, true));
         }, handledEventsToo: true);
 
-        InputElement.LostFocusEvent.AddClassHandler<TextBox>((t, _) => keyboard.OnNext((t, false)), handledEventsToo: true);
+        InputElement.LostFocusEvent.AddClassHandler<TextBox>((t, _) => keyboard.OnNext((t, false)),
+            handledEventsToo: true);
 
         keyboard.Throttle(TimeSpan.FromMilliseconds(100)).Subscribe(e =>
         {
@@ -88,7 +95,7 @@ public class TabTipIntegration
     //
     // Docs at https://docs.avaloniaui.net/docs/concepts/services/input-pane#occludedrect
     // say e.EndRect/inputPane.OccludedRect should be empty, but they are not.
-    private static void InputPaneStateChanged(object? sender, InputPaneStateEventArgs e)
+    private void InputPaneStateChanged(object? sender, InputPaneStateEventArgs e)
     {
         var inputPane = (IInputPane)sender!;
         var tl = tlMap[inputPane];
