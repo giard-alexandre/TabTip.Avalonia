@@ -8,24 +8,33 @@ using Avalonia.Media;
 
 namespace TabTip.Avalonia;
 
-public class TabTipIntegration
+// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
+/// <summary>
+/// TabTip Integration that opens the keyboard whenever an InputControl gets focused
+/// and closes it when an InputControl no longer has focus.
+/// </summary>
+/// <param name="tabTip">The OS-specific <see cref="ITabTip"/> implementation that will be used to open the TabTip.</param>
+/// <remarks>
+/// Can be inherited and <seealso cref="Integrate"/> can be overriden to customize the integration logic.
+/// You could, for example, add other custom controls that don't inherit <see cref="InputElement"/> to the integration.
+/// For implementation details see: 
+/// <see href="https://github.com/giard-alexandre/TabTip.Avalonia/blob/main/src/TabTip.Avalonia/TabTipIntegration.cs">this class in github</see>
+/// </remarks>
+public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
 {
     private readonly Dictionary<IInputPane, TopLevel> tlMap = new();
     private readonly Subject<(InputElement InputElement, bool DesiredState)> keyboard = new();
-    private bool _alreadyDone;
 
-    private readonly ITabTip _tabTip;
+    // ReSharper disable once MemberCanBePrivate.Global
+    protected bool IsIntegrated { get; set; }
 
-    public TabTipIntegration(ITabTipFactory? factory)
+    public ITabTip TabTip { get; set; } = tabTip;
+
+    public virtual void Integrate()
     {
-        _tabTip = factory?.Create() ?? new DefaultTabTipFactory().Create();
-    }
-
-    public void Integrate()
-    {
-        if (_alreadyDone)
+        if (IsIntegrated)
             return;
-        _alreadyDone = true;
+        IsIntegrated = true;
 
         Control.LoadedEvent.AddClassHandler<TopLevel>((s, e) =>
         {
@@ -78,14 +87,14 @@ public class TabTipIntegration
             {
                 if (input.State == InputPaneState.Closed)
                 {
-                    _tabTip.Toggle(hwnd);
+                    TabTip.Toggle(hwnd);
                 }
             }
             else
             {
                 if (input.State == InputPaneState.Open)
                 {
-                    _tabTip.Toggle(hwnd);
+                    TabTip.Toggle(hwnd);
                 }
             }
         });

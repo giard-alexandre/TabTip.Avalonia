@@ -1,15 +1,17 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using TabTip.Avalonia;
 
 namespace Demo;
 
 public partial class MainWindow : Window
 {
-    // static MainWindow()
-    // {
-    //     OSKIntegration.Integrate();
-    // }
+    static MainWindow()
+    {
+        // Integrate into every InputControl in the app.
+        TabTipManager.Integrate();
+    }
     public MainWindow()
     {
         InitializeComponent();
@@ -25,6 +27,7 @@ public partial class MainWindow : Window
         if (hwnd == IntPtr.Zero)
             return;
 
+        TabTipManager.Toggle(hwnd);
         // OSKIntegration.ToggleOSK(hwnd);
     }
 }
