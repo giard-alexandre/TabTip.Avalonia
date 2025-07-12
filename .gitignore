@@ -1,36 +1,20 @@
-# User-specific files
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/**/usage.statistics.xml
-.idea/**/dictionaries
-.idea/**/shelf
-.idea/**/aws.xml
-.idea/**/contentModel.xml
-.idea/**/dataSources/
-.idea/**/dataSources.ids
-.idea/**/dataSources.local.xml
-.idea/**/sqlDataSources.xml
-.idea/**/dynamic.xml
-.idea/**/uiDesigner.xml
-.idea/**/dbnavigator.xml
-.idea/**/gradle.xml
-.idea/**/libraries
-.idea/**/httpRequests/
-.idea/**/sonarlint/
-http-client.private.env.json
+## User-specific files
+!.idea/vcs.xml
+.idea/
 
-# Build and ReSharper cache
+## Build and ReSharper cache
 bin/
 obj/
+out/
 /_ReSharper.Caches/
 
-# Rider temporary files
+## Rider temporary files
 riderModule.iml
 
-# Rider local settings
+## Rider local settings
 .idea/.idea.*/.idea/vcs.xml
 
-# Visual Studio files
+## Visual Studio files
 *.suo
 *.user
 *.userosscache
@@ -39,9 +23,16 @@ riderModule.iml
 /.vs/
 /TestResults/
 
-# Other
+## Other
 /packages/
 /artifacts/
 
-# Nuget
+## Nuget
 *.nupkg
+
+## VS CODE
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
