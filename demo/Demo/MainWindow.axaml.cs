@@ -6,10 +6,10 @@ namespace Demo;
 
 public partial class MainWindow : Window
 {
-    static MainWindow()
-    {
-        OSKIntegration.Integrate();
-    }
+    // static MainWindow()
+    // {
+    //     OSKIntegration.Integrate();
+    // }
     public MainWindow()
     {
         InitializeComponent();
@@ -17,13 +17,14 @@ public partial class MainWindow : Window
 
     private void Button_OnClick(object? sender, RoutedEventArgs e)
     {
-        TopLevel? tl = TopLevel.GetTopLevel(this);
+        TopLevel? tl = GetTopLevel(this);
         if (tl == null)
             return;
 
         IntPtr hwnd = tl.TryGetPlatformHandle()?.Handle ?? IntPtr.Zero;
         if (hwnd == IntPtr.Zero)
             return;
-        OSKIntegration.ToggleOSK(hwnd);
+
+        // OSKIntegration.ToggleOSK(hwnd);
     }
 }

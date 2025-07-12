@@ -1,20 +1,12 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
-namespace TabTip.Avalonia.Windows;
+namespace TabTip.Avalonia;
 
+[SupportedOSPlatform("windows")]
 public class WindowsTabTip : ITabTip
 {
-    public void Open()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Close()
-    {
-        throw new NotImplementedException();
-    }
-    
     public void Toggle(IntPtr hwnd)
     {
         UIHostNoLaunch uiHostNoLaunch;
