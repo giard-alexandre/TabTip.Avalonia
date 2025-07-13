@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/giard-alexandre/TabTip.Avalonia/compare/v0.2.0...v0.2.1) (2025-07-13)
+
+
+### 🐛 Bug Fixes
+
+* readme import path ([b02d0ae](https://github.com/giard-alexandre/TabTip.Avalonia/commit/b02d0ae3edec9ad0d37942657ef4ef10a08937b5))
+
 ## [0.2.0](https://github.com/giard-alexandre/TabTip.Avalonia/compare/v0.1.0...v0.2.0) (2025-07-13)
 
 
