@@ -1,4 +1,4 @@
-namespace TabTip.Avalonia;
+namespace TabTip.Avalonia.TabTip;
 
 public class NullTabTip : ITabTip
 {

@@ -5,30 +5,32 @@ using Avalonia.Controls;
 using Avalonia.Controls.Platform;
 using Avalonia.Input;
 using Avalonia.Media;
+using TabTip.Avalonia.TabTip;
 
 namespace TabTip.Avalonia;
 
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 /// <summary>
-/// TabTip Integration that opens the keyboard whenever an InputControl gets focused
-/// and closes it when an InputControl no longer has focus.
+/// TabTip Integration that opens the keyboard whenever a TextBox gets focused
+/// and closes it when a TextBox no longer has focus.
 /// </summary>
 /// <param name="tabTip">The OS-specific <see cref="ITabTip"/> implementation that will be used to open the TabTip.</param>
 /// <remarks>
 /// Can be inherited and <seealso cref="Integrate"/> can be overriden to customize the integration logic.
-/// You could, for example, add other custom controls that don't inherit <see cref="InputElement"/> to the integration.
+/// You could, for example, add logic to trigger for other custom controls that don't inherit <see cref="TextBox"/> to the integration.
 /// For implementation details see: 
-/// <see href="https://github.com/giard-alexandre/TabTip.Avalonia/blob/main/src/TabTip.Avalonia/TabTipIntegration.cs">this class in github</see>
+/// <see href="https://github.com/giard-alexandre/TabTip.Avalonia/blob/main/src/TabTip.Avalonia/TabTipIntegration.cs">this class in GitHub</see>
 /// </remarks>
 public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
 {
     private readonly Dictionary<IInputPane, TopLevel> tlMap = new();
-    private readonly Subject<(InputElement InputElement, bool DesiredState)> keyboard = new();
+    private readonly Subject<(TextBox TextBox, bool DesiredState)> keyboard = new();
 
     // ReSharper disable once MemberCanBePrivate.Global
     protected bool IsIntegrated { get; set; }
 
     public ITabTip TabTip { get; set; } = tabTip;
+    public PointerType[] Triggers { get; set; } = [PointerType.Touch, PointerType.Pen];
 
     public virtual void Integrate()
     {
@@ -58,12 +60,11 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
 
         InputElement.PointerPressedEvent.AddClassHandler<TextBox>((t, e) =>
         {
-            // if (e.Pointer.Type == PointerType.Touch)
-            keyboard.OnNext((t, true));
-
-            // TODO: Restore below (probably)
-            // if (e.Pointer.Type == PointerType.Touch)
-            //     keyboard.OnNext((t, true));
+            // Check if we should trigger the tabtip or short-circuit early.
+            if (Triggers.Contains(e.Pointer.Type))
+            {
+                keyboard.OnNext((t, true));
+            }
         }, handledEventsToo: true);
 
         InputElement.LostFocusEvent.AddClassHandler<TextBox>((t, _) => keyboard.OnNext((t, false)),
@@ -71,7 +72,7 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
 
         keyboard.Throttle(TimeSpan.FromMilliseconds(100)).Subscribe(e =>
         {
-            var tl = TopLevel.GetTopLevel(e.InputElement);
+            var tl = TopLevel.GetTopLevel(e.TextBox);
             if (tl == null)
                 return;
 
@@ -109,7 +110,7 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
         var inputPane = (IInputPane)sender!;
         var tl = tlMap[inputPane];
 
-        if (tl.FocusManager?.GetFocusedElement() is not InputElement ctrl) // TODO: Use textbox?
+        if (tl.FocusManager?.GetFocusedElement() is not TextBox ctrl)
             return;
 
         if (e.NewState == InputPaneState.Open)

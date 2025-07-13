@@ -1,3 +1,6 @@
+using Avalonia.Input;
+using TabTip.Avalonia.TabTip;
+
 namespace TabTip.Avalonia;
 
 public static class TabTipManager
@@ -31,5 +34,10 @@ public static class TabTipManager
     public static void OverrideIntegration(ITabTipIntegration integration)
     {
         _integration = integration;
+    }
+    
+    public static void OverrideIntegrationTrigger(PointerType[] triggers)
+    {
+        _integration.Triggers = triggers;
     }
 }

@@ -1,3 +1,5 @@
+using TabTip.Avalonia.TabTip;
+
 namespace TabTip.Avalonia;
 
 public class DefaultTabTipFactory : ITabTipFactory

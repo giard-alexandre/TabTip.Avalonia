@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
-namespace TabTip.Avalonia;
+namespace TabTip.Avalonia.TabTip;
 
 [SupportedOSPlatform("windows")]
 public class WindowsTabTip : ITabTip
@@ -12,7 +12,7 @@ public class WindowsTabTip : ITabTip
         UIHostNoLaunch uiHostNoLaunch;
         try
         {
-            uiHostNoLaunch = new();
+            uiHostNoLaunch = new UIHostNoLaunch();
         }
         catch(COMException e)
         {
@@ -42,7 +42,7 @@ public class WindowsTabTip : ITabTip
     }
     
     [ComImport, Guid("4ce576fa-83dc-4F88-951c-9d0782b4e376")]
-    private class UIHostNoLaunch { }
+    private class UIHostNoLaunch;
 
     [ComImport, Guid("37c994e7-432b-4834-a2f7-dce1f13b834b")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

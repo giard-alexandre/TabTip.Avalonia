@@ -1,4 +1,4 @@
-namespace TabTip.Avalonia;
+namespace TabTip.Avalonia.TabTip;
 
 public interface ITabTip
 {
