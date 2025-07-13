@@ -32,6 +32,7 @@ public override void OnFrameworkInitializationCompleted()
 }
 ```
 
+## Software Keyboard Trigger
 By default, the software keyboard is only opened if the PointerType used when clicking is either `PointerType.Touch` or
 `PointerType.Pen`.
 If you would like to use any other setting, provide an array of `PointerType`s that you want to trigger the software
@@ -40,6 +41,47 @@ keyboard as below:
 ```csharp
 // Trigger on all pointer types.
 TabTipManager.OverrideIntegrationTrigger([PointerType.Touch, PointerType.Mouse, PointerType.Pen]);
+```
+
+## TabTip Factory
+The `ITabTipFactory` interface allows you to provide your own implementation of the `ITabTip` interface, giving you the flexibility to create it based
+on which OS the host is running on. The current default is `DefaultTabTipFactory` which creates a `TabTip` instance for Windows or, if not running on Windows,
+simply creates a `NullTabTip` instance, which has an empty `Toggle` method so that we don't do anything on other OSs.
+
+### Overriding TabTip Factory
+To override the default factory,
+provide an implementation of `ITabTipFactory` to `TabTipManager.OverrideTabTipFactory` as follows:
+```csharp
+TabTipManager.OverrideTabTipFactory(myCustomFactory);
+```
+
+This will change the factory used and set the `TabTip` used by the manager to the one returned by `myCustomFactory`.
+
+## TabTip
+The TabTip is the platform-specific implementation of the `ITabTip` interface. It is responsible for opening and closing
+the software keyboard. We currently have only two built-in implementations:
+- NullTabTip: Does nothing.
+- WindowsTabTip: Contains logic to open the Software Keyboard on Windows.
+
+### Overriding TabTip
+The recommended way to override the TabTip used it to override the `ITabTipFactory` [as described above](#overriding-tabtip-factory).
+
+## TabTip Integration
+The `ITabTipIntegration` interface defines the methods used to integrate the `TabTip` into the application. The implementing
+class is responsible for when to trigger the `TabTip` as well as setting up the appropriate event handlers to know
+when a `TextBox` has been clicked.
+
+### Overriding TabTip Integration
+Before fully replacing the default integration, it is recommended to override the `TabTipIntegration` class.
+The `Integrate` method is purposefully virtual so that it can be overridden. Simply create a new class that inherits from
+`TabTipIntegration` and override the `Integrate` method. If you specifically call `base.Integrate()` in your override,
+it will call the default implementation of `Integrate` which will set up the default event handlers while allowing you to
+add any new ones you want. This is useful if all you want to do is integrate controls other than `TextBox`.
+
+Regardless of whether you create a brand new class that implements `ITabTipIntegration` or extends `TabTipIntegration`,
+you need to set it as the one that is used by calling:
+```csharp
+TabTipManager.OverrideIntegration(myCustomIntegration);
 ```
 
 # OS Support
