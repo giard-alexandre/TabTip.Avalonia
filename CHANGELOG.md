@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/giard-alexandre/TabTip.Avalonia/compare/v0.2.1...v0.3.0) (2025-07-13)
+
+
+### 🚀 Features
+
+* readme ([b34f980](https://github.com/giard-alexandre/TabTip.Avalonia/commit/b34f980857df81607f9718aeed1b1072f687a4f8))
+
 ## [0.2.1](https://github.com/giard-alexandre/TabTip.Avalonia/compare/v0.2.0...v0.2.1) (2025-07-13)
 
 
