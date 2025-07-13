@@ -15,7 +15,7 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <Authors>Alexandre Giard</Authors>
         <!--x-release-please-start-version-->
-        <Version>0.1.0</Version>
+        <Version>0.3.1</Version>
         <!--x-release-please-end-->
         <!--    TODO: Sign? -->
         <!--    <SignAssembly>True</SignAssembly>-->

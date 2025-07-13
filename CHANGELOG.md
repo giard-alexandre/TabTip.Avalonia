@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/giard-alexandre/TabTip.Avalonia/compare/v0.3.0...v0.3.1) (2025-07-13)
+
+
+### 📦️ Build System, Dependencies
+
+* use Directory.Build.props ([eae5118](https://github.com/giard-alexandre/TabTip.Avalonia/commit/eae51182edc75e7a3db153882fc50b24283b040c))
+
 ## [0.3.0](https://github.com/giard-alexandre/TabTip.Avalonia/compare/v0.2.1...v0.3.0) (2025-07-13)
 
 
