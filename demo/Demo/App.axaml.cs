@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using TabTip.Avalonia;
 
@@ -20,6 +21,7 @@ public partial class App : Application
         }
 
         // Integrate the tabtip manager into the entire app.
+        TabTipManager.OverrideIntegrationTrigger([PointerType.Touch, PointerType.Mouse, PointerType.Pen]);
         TabTipManager.Integrate();
 
         base.OnFrameworkInitializationCompleted();

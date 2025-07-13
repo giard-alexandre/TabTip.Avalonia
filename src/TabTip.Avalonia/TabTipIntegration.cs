@@ -102,8 +102,9 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
     }
 
     // TODO: Make configurable so that we can still trigger the tabtip even when a hardware keyboard is connected.
-    private bool ShouldTrigger(PointerType pointerType) =>
-        Triggers.Contains(pointerType) && !TabTip.Keyboard.IsHardwareKeyboardConnected();
+    private bool ShouldTrigger(PointerType pointerType) => Triggers.Contains(pointerType);
+        // TODO: once we figure out how to check for hardware keyboards, replace with the below line.
+        // Triggers.Contains(pointerType) && !TabTip.Keyboard.IsHardwareKeyboardConnected();
 
     // Shift content from behind the osk. Could shift the entire window instead.
     //
