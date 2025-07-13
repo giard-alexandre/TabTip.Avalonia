@@ -3,6 +3,7 @@
 </p>
 
 # Tabtip.Avalonia (Tablet Text Input Panel)
+[![NuGet Version](https://img.shields.io/nuget/v/TabTip.Avalonia)](https://www.nuget.org/packages/TabTip.Avalonia/)
 
 > Avalonia-based and cross-platform re-imagining of [WPFTabTip](https://github.com/maximcus/WPFTabTip)
 
