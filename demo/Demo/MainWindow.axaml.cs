@@ -7,11 +7,6 @@ namespace Demo;
 
 public partial class MainWindow : Window
 {
-    static MainWindow()
-    {
-        // Integrate into every InputControl in the app.
-        TabTipManager.Integrate();
-    }
     public MainWindow()
     {
         InitializeComponent();

@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using TabTip.Avalonia;
 
 namespace Demo;
 
@@ -17,6 +18,9 @@ public partial class App : Application
         {
             desktop.MainWindow = new MainWindow();
         }
+
+        // Integrate the tabtip manager into the entire app.
+        TabTipManager.Integrate();
 
         base.OnFrameworkInitializationCompleted();
     }
