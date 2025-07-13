@@ -1,0 +1,21 @@
+name: 🧪 Test
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    name: 🧪 Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟣 Setup .NET
+        uses: actions/setup-dotnet@v4
+
+      - name: 🧪 Test
+        run: >
+          dotnet test
+          --configuration Release

@@ -1,0 +1,21 @@
+name: 🏗 Build
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    name: 🏗 Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟣 Setup .NET
+        uses: actions/setup-dotnet@v4
+
+      - name: 🏗️ Build
+        run: >
+          dotnet build
+          --configuration Release

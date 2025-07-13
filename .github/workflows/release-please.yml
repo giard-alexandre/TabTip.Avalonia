@@ -1,0 +1,89 @@
+name: 🚀 Release
+
+on:
+  workflow_run:
+    workflows: [ Build ]
+    types: [ completed ]
+    branches: [ main ]
+
+jobs:
+  # Creates Release PRs ONLY on initial run. Then, once the created PR is merged, the same job will:
+  # - Tag the full version (hence the following version tag job for short tag names)
+  # - Create the release for this version
+  # -Output the new version number to the rest of the workflow
+  release-please:
+    name: ✨ Release Please
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # releases, tags
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      pr_created: ${{ steps.release.outputs.release_created }}
+      v_major: ${{ steps.release.outputs.major }}
+      v_minor: ${{ steps.release.outputs.minor }}
+      v_patch: ${{ steps.release.outputs.patch }}
+    steps:
+      - name: ✨ Release Please
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please/config.json
+          manifest-file: release-please/manifest.json
+
+  tag-commits:
+    name: 🏷️ Tag Commits
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # releases, tags
+    needs:
+      - release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    env:
+      V_MAJOR: ${{ needs.release-please.outputs.v_major }}
+      V_MINOR: ${{ needs.release-please.outputs.v_minor }}
+      V_PATCH: ${{ needs.release-please.outputs.v_patch }}
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v4
+      - run: |
+          echo "env Major version: ${{ env.V_MAJOR }}"
+          echo "env Minor version: ${{ env.V_MINOR }}"
+          echo "env Patch version: ${{ env.V_PATCH }}"
+
+  publish:
+    name: 📦 Publish to NuGet
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # releases, tags
+      packages: write
+    needs:
+      - release-please
+      - tag-commits
+    if: ${{ needs.release-please.outputs.release_created }}
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v4
+      - name: 🟣 Setup .NET
+        uses: actions/setup-dotnet@v4
+      - name: 📦 Pack
+        run: >
+          dotnet pack
+          --configuration Release
+          --output nuget
+          --nologo
+          --include-source
+      - name: 🚀 Push to Nuget
+        run: >
+          dotnet nuget push
+          "nuget/*.nupkg"
+          --api-key "${{ secrets.NUGET_API_KEY }}"
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
+#      - name: 🚀 Push to Github Packages
+#        run: >
+#          dotnet nuget push
+#          "nuget/*.nupkg"
+#          --api-key ${{ secrets.GITHUB_TOKEN }}
+#          --source https://nuget.pkg.github.com/TabTip.Avalonia/index.json
+#          --skip-duplicate

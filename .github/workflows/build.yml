@@ -1,0 +1,18 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+    branches:
+      - '**:**'
+
+jobs:
+  build:
+    name: 🏗 Build
+    uses: ./.github/workflows/call-build.yml
+
+  test:
+    name: 🧪 Test
+    needs:
+      - build
+    uses: ./.github/workflows/call-test.yml
