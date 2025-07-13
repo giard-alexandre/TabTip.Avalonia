@@ -7,8 +7,44 @@
         MinWidth="300" MinHeight="300"
         x:Class="Demo.MainWindow"
         Title="Demo">
-    <StackPanel>
-        <TextBox>Write in Me</TextBox>
-        <Button Click="Button_OnClick">Toggle</Button>
+    <StackPanel Spacing="5">
+        <HeaderedContentControl Header="Opens TabTip">
+            <StackPanel Spacing="5">
+                <TextBox>Write in Me</TextBox>
+                <NumericUpDown />
+                <AutoCompleteBox />
+            </StackPanel>
+        </HeaderedContentControl>
+        <HeaderedContentControl Header="Does NOT Open TabTip">
+            <StackPanel Spacing="5">
+                <ListBox>
+                    <ListBoxItem>Item 1</ListBoxItem>
+                    <ListBoxItem>Item 2</ListBoxItem>
+                    <ListBoxItem>Item 3</ListBoxItem>
+                </ListBox>
+                <Button>Random Button</Button>
+                <TextBlock>TextBlock</TextBlock>
+                <Label>Label</Label>
+                <Calendar />
+                <ToggleButton>Toggle Button</ToggleButton>
+                <ToggleSwitch />
+                <CheckBox />
+                <ButtonSpinner Height="30"
+                               AllowSpin="True"
+                               ShowButtonSpinner="True">
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Everest"/>
+                </ButtonSpinner>
+                <ComboBox PlaceholderText="Pick an Item">
+                    <ComboBoxItem>Inline Items</ComboBoxItem>
+                    <ComboBoxItem>Inline Item 2</ComboBoxItem>
+                    <ComboBoxItem>Inline Item 3</ComboBoxItem>
+                    <ComboBoxItem>Inline Item 4</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+        </HeaderedContentControl>
+        
+        
+        
+        <Button Click="Button_OnClick">Manually Toggle TapTip</Button>
     </StackPanel>
 </Window>
