@@ -1,62 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
     <ItemGroup>
       <PackageReference Include="Avalonia" Version="11.3" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
       <PackageReference Include="System.Management" Version="6.0.0" />
       <PackageReference Include="System.Reactive" Version="6.0.1" />
     </ItemGroup>
-
-    <PropertyGroup Label="Package Info">
-        <RepositoryUrl>https://github.com/giard-alexandre/TabTip.Avalonia</RepositoryUrl>
-        <PackageProjectUrl>https://github.com/giard-alexandre/TabTip.Avalonia</PackageProjectUrl>
-        <RepositoryType>git</RepositoryType>
-        <Description>Library used to add support for the on-screen keyboard in Avalonia.</Description>
-        <PackageTags>c-sharp;xaml;cross-platform;dotnet;dotnetcore;avalonia;avaloniaui;tabtip;tablet;keyboard</PackageTags>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <Authors>Alexandre Giard</Authors>
-        <!--x-release-please-start-version-->
-        <Version>0.1.0</Version>
-        <!--x-release-please-end-->
-        <!--    TODO: Sign? -->
-        <!--    <SignAssembly>True</SignAssembly>-->
-        <!--    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)TabTip.Avalonia.snk</AssemblyOriginatorKeyFile>-->
-    </PropertyGroup>
-
-    <!--  Add Debug Symbols-->
-    <PropertyGroup>
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    </PropertyGroup>
-
-    <!-- Deterministic Builds when on CI -->
-    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-    </PropertyGroup>
-
-    <!-- Add Package Icon -->
-    <PropertyGroup>
-        <PackageIcon>icon.png</PackageIcon>
-    </PropertyGroup>
-
-    <ItemGroup Label="PackageIcon">
-        <None Include="$(MSBuildThisFileDirectory)/../../icon.png" Pack="true" Visible="false" PackagePath="" />
-    </ItemGroup>
-
-    <!-- Add Package README -->
-    <PropertyGroup>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-    </PropertyGroup>
-
-    <ItemGroup Label="PackageIcon" Condition="'$(ProjectName.EndsWith(`Test`))' == 'false'">
-        <None Include="$(MSBuildThisFileDirectory)/../../README.md" Pack="true" Visible="false" PackagePath="" />
-    </ItemGroup>
-
 </Project>
