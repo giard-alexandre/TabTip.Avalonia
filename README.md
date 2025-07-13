@@ -1,6 +1,6 @@
-<div style="text-align: center;">
+<p align="center">
     <img src="icon.png" width="25%" style="max-width: 150px;" />
-</div>
+</p>
 
 # Tabtip.Avalonia (Tablet Text Input Panel)
 

@@ -15,8 +15,9 @@ jobs:
     name: ✨ Release Please
     runs-on: ubuntu-latest
     permissions:
-      contents: write # releases, tags
+      contents: write # releases
       pull-requests: write
+      issues: write # tags
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       pr_created: ${{ steps.release.outputs.release_created }}
