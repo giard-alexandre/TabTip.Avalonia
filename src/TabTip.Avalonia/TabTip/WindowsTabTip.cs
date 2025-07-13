@@ -7,6 +7,8 @@ namespace TabTip.Avalonia.TabTip;
 [SupportedOSPlatform("windows")]
 public class WindowsTabTip : ITabTip
 {
+    public IHardwareKeyboard Keyboard { get; } = new WindowsHardwareKeyboard();
+
     public void Toggle(IntPtr hwnd)
     {
         UIHostNoLaunch uiHostNoLaunch;

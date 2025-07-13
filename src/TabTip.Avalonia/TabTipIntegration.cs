@@ -61,7 +61,7 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
         InputElement.PointerPressedEvent.AddClassHandler<TextBox>((t, e) =>
         {
             // Check if we should trigger the tabtip or short-circuit early.
-            if (Triggers.Contains(e.Pointer.Type))
+            if (ShouldTrigger(e.Pointer.Type))
             {
                 keyboard.OnNext((t, true));
             }
@@ -100,6 +100,10 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
             }
         });
     }
+
+    // TODO: Make configurable so that we can still trigger the tabtip even when a hardware keyboard is connected.
+    private bool ShouldTrigger(PointerType pointerType) =>
+        Triggers.Contains(pointerType) && !TabTip.Keyboard.IsHardwareKeyboardConnected();
 
     // Shift content from behind the osk. Could shift the entire window instead.
     //

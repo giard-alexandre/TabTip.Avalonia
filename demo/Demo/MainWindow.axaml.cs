@@ -28,6 +28,5 @@ public partial class MainWindow : Window
             return;
 
         TabTipManager.Toggle(hwnd);
-        // OSKIntegration.ToggleOSK(hwnd);
     }
 }
