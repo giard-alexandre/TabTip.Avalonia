@@ -9,6 +9,11 @@ public static class TabTipManager
     private static ITabTip _tabTip = _tabTipFactory.Create();
     private static ITabTipIntegration _integration = new TabTipIntegration(_tabTip);
 
+    public static void Integrate(InputElement input)
+    {
+        _integration.Integrate(input);
+    }
+
     public static void Integrate()
     {
         _integration.Integrate();

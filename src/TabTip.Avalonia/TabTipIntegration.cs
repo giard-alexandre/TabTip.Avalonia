@@ -25,6 +25,7 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
 {
     private readonly Dictionary<IInputPane, TopLevel> tlMap = new();
     private readonly Subject<(TextBox TextBox, bool DesiredState)> keyboard = new();
+    private bool _occlusionManagerRegistered;
 
     // ReSharper disable once MemberCanBePrivate.Global
     protected bool IsIntegrated { get; set; }
@@ -32,31 +33,22 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
     public ITabTip TabTip { get; set; } = tabTip;
     public PointerType[] Triggers { get; set; } = [PointerType.Touch, PointerType.Pen];
 
+    public virtual void Integrate(InputElement input)
+    {
+        // Integrate the input pane control shifter?
+
+        // Integrate to children?
+        // Integrate to control itself only.
+    }
+
     public virtual void Integrate()
     {
         if (IsIntegrated)
             return;
         IsIntegrated = true;
 
-        Control.LoadedEvent.AddClassHandler<TopLevel>((s, e) =>
-        {
-            var input = s.InputPane;
-            if (input == null)
-                return;
+        RegisterOcclusionManager();
 
-            tlMap[input] = s;
-            input.StateChanged += InputPaneStateChanged;
-        }, handledEventsToo: true);
-
-        Control.UnloadedEvent.AddClassHandler<TopLevel>((s, e) =>
-        {
-            var input = s.InputPane;
-            if (input == null)
-                return;
-
-            input.StateChanged -= InputPaneStateChanged;
-            tlMap.Remove(input);
-        }, handledEventsToo: true);
 
         InputElement.PointerPressedEvent.AddClassHandler<TextBox>((t, e) =>
         {
@@ -101,10 +93,39 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
         });
     }
 
-    // TODO: Make configurable so that we can still trigger the tabtip even when a hardware keyboard is connected.
+    private void RegisterOcclusionManager()
+    {
+        if (_occlusionManagerRegistered)
+        {
+            return;
+        }
+
+        _occlusionManagerRegistered = true;
+
+        Control.LoadedEvent.AddClassHandler<TopLevel>((s, e) =>
+        {
+            var input = s.InputPane;
+            if (input == null)
+                return;
+
+            tlMap[input] = s;
+            input.StateChanged += InputPaneStateChanged;
+        }, handledEventsToo: true);
+
+        Control.UnloadedEvent.AddClassHandler<TopLevel>((s, e) =>
+        {
+            var input = s.InputPane;
+            if (input == null)
+                return;
+
+            input.StateChanged -= InputPaneStateChanged;
+            tlMap.Remove(input);
+        }, handledEventsToo: true);
+    }
+
     private bool ShouldTrigger(PointerType pointerType) => Triggers.Contains(pointerType);
-        // TODO: once we figure out how to check for hardware keyboards, replace with the below line.
-        // Triggers.Contains(pointerType) && !TabTip.Keyboard.IsHardwareKeyboardConnected();
+    // TODO: once we figure out how to check for hardware keyboards, replace with the below line.
+    // Triggers.Contains(pointerType) && !TabTip.Keyboard.IsHardwareKeyboardConnected();
 
     // Shift content from behind the osk. Could shift the entire window instead.
     //

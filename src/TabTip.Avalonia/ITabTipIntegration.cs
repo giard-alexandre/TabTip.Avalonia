@@ -6,6 +6,7 @@ namespace TabTip.Avalonia;
 public interface ITabTipIntegration
 {
     void Integrate();
+    void Integrate(InputElement input);
     
     // TODO: integrate on a specific control only.
     // void Integrate(Control control);

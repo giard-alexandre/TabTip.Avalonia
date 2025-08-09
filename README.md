@@ -6,6 +6,7 @@
 [![NuGet Version](https://img.shields.io/nuget/v/TabTip.Avalonia)](https://www.nuget.org/packages/TabTip.Avalonia/)
 
 > Avalonia-based and cross-platform re-imagining of [WPFTabTip](https://github.com/maximcus/WPFTabTip)
+> that came to be after I stumbled upon [this discussion in the Avalonia repo](https://github.com/AvaloniaUI/Avalonia/issues/10136)
 
 > [!NOTE]  
 > Currently, the Software Keyboard is only supported on Windows and the default `TabTipIntegration` triggers based
