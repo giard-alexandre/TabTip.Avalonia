@@ -15,9 +15,9 @@ public static class TabTipManager
         _integration.Register(control);
     }
 
-    public static void Integrate()
+    public static void Integrate(bool global = true)
     {
-        _integration.Integrate();
+        _integration.Integrate(global);
     }
 
     public static void Toggle(IntPtr hwnd)

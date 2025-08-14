@@ -47,7 +47,7 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
     }
 
     private bool IsChildOfRegisteredControls(TextBox eventingTextBox) =>
-        registeredControls.Any(c => c.IsVisualAncestorOf(eventingTextBox));
+        registeredControls.Any(c => c == eventingTextBox || c.IsVisualAncestorOf(eventingTextBox));
 
     public virtual void Integrate(bool global = true)
     {
