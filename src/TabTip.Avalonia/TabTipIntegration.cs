@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Platform;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 using TabTip.Avalonia.TabTip;
 
 namespace TabTip.Avalonia;
@@ -24,6 +25,7 @@ namespace TabTip.Avalonia;
 public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
 {
     private readonly Dictionary<IInputPane, TopLevel> tlMap = new();
+    private readonly HashSet<Control> registeredControls = [];
     private readonly Subject<(TextBox TextBox, bool DesiredState)> keyboard = new();
     private bool _occlusionManagerRegistered;
 
@@ -33,27 +35,32 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
     public ITabTip TabTip { get; set; } = tabTip;
     public PointerType[] Triggers { get; set; } = [PointerType.Touch, PointerType.Pen];
 
-    public virtual void Integrate(InputElement input)
+    /// <inheritdoc />
+    public void Register(Control control)
     {
-        // Integrate the input pane control shifter?
+        if (!IsIntegrated)
+        {
+            Integrate(false);
+        }
 
-        // Integrate to children?
-        // Integrate to control itself only.
+        registeredControls.Add(control);
     }
 
-    public virtual void Integrate()
+    private bool IsChildOfRegisteredControls(TextBox eventingTextBox) =>
+        registeredControls.Any(c => c.IsVisualAncestorOf(eventingTextBox));
+
+    public virtual void Integrate(bool global = true)
     {
+        RegisterOcclusionManager();
+
         if (IsIntegrated)
             return;
         IsIntegrated = true;
 
-        RegisterOcclusionManager();
-
-
         InputElement.PointerPressedEvent.AddClassHandler<TextBox>((t, e) =>
         {
             // Check if we should trigger the tabtip or short-circuit early.
-            if (ShouldTrigger(e.Pointer.Type))
+            if (ShouldTrigger(e.Pointer.Type) && (global || IsChildOfRegisteredControls(t)))
             {
                 keyboard.OnNext((t, true));
             }
@@ -96,9 +103,7 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
     private void RegisterOcclusionManager()
     {
         if (_occlusionManagerRegistered)
-        {
             return;
-        }
 
         _occlusionManagerRegistered = true;
 

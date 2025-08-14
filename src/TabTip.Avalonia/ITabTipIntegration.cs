@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using Avalonia.Input;
 using TabTip.Avalonia.TabTip;
 
@@ -5,11 +6,9 @@ namespace TabTip.Avalonia;
 
 public interface ITabTipIntegration
 {
-    void Integrate();
-    void Integrate(InputElement input);
-    
-    // TODO: integrate on a specific control only.
-    // void Integrate(Control control);
+    void Integrate(bool global = true);
+    void Register(Control control);
+
     ITabTip TabTip { get; set; }
     
     /// <summary>
