@@ -16,23 +16,70 @@
 
 # Usage
 
-The easiest way to use this library is to install the [NuGet package](https://www.nuget.org/packages/TabTip.Avalonia/)
-and then add the following to `App.xaml.cs`:
+Just Install the [NuGet package](https://www.nuget.org/packages/TabTip.Avalonia/) and decide whether you want to use the [Global Integration](#gloabl-integration) or the [Targeted Integration](#targeted-integration).
+
+## Gloabl Integration
+Add the following to `App.xaml.cs`:
 
 ```csharp
 // At the top of your  file
 using TabTip.Avalonia;
+
+// ... start of App.xaml.cs
 
 public override void OnFrameworkInitializationCompleted()
 {
     // ...
 
     // Integrate the tabtip manager into the entire app.
-    TabTipManager.Integrate();
+    TabTipManager.Integrate(); // (defaults to `true` for the `Integrate(bool global)` parameter.)
 
     // ...
 }
 ```
+
+This will integrate the `TabTipManager` into the entire app, causing it to trigger the TabTip for any TextBox that is clicked.
+
+## Targeted Integration
+Just like for the [Global Integration](#gloabl-integration), we need to add a line to `App.xaml.cs`, but this time, we pass in
+`false` for the `global` parameter. This will only integrate the `TabTipManager` but prevent it from triggering the TabTip
+indiscriminately for any TextBox that is clicked:
+
+```csharp
+// At the top of your  file
+using TabTip.Avalonia;
+
+// ... start of App.xaml.cs
+
+public override void OnFrameworkInitializationCompleted()
+{
+    // ...
+
+    // Integrate the tabtip manager into the entire app but don't trigger unless a textbox is registered.
+    TabTipManager.Integrate(false);
+
+    // ...
+}
+```
+
+Once the TabTipManager has been integrated into the app, you only need to explicitly register the TextBox that you want to
+trigger the TabTip for. This can be done by calling `TabTipManager.Register(TextBox)` as follows:
+
+```csharp
+// In this example, this is inside of a `Control`, so we need to override `OnApplyTemplate`
+// to register the TextBox so that we're sure that it has been initialized.
+protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+{
+    base.OnApplyTemplate(e);
+    
+    TabTipManager.Register(IntegratedTextBox);
+    
+    // Even though `NumericUpDown` is not itself a TextBox, we can still register it as the `Register` command will allow
+    // any child TextBox of the registered control to trigger the TabTip. This applies to any control.
+    TabTipManager.Register(IntegratedNumericUpDown);
+}
+```
+
 
 ## Software Keyboard Trigger
 By default, the software keyboard is only opened if the PointerType used when clicking is either `PointerType.Touch` or
