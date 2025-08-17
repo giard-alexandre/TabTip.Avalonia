@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using Avalonia.Input;
 using TabTip.Avalonia.TabTip;
 
@@ -9,9 +10,14 @@ public static class TabTipManager
     private static ITabTip _tabTip = _tabTipFactory.Create();
     private static ITabTipIntegration _integration = new TabTipIntegration(_tabTip);
 
-    public static void Integrate()
+    public static void Register(Control control)
     {
-        _integration.Integrate();
+        _integration.Register(control);
+    }
+
+    public static void Integrate(bool global = true)
+    {
+        _integration.Integrate(global);
     }
 
     public static void Toggle(IntPtr hwnd)

@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Platform;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 using TabTip.Avalonia.TabTip;
 
 namespace TabTip.Avalonia;
@@ -24,7 +25,9 @@ namespace TabTip.Avalonia;
 public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
 {
     private readonly Dictionary<IInputPane, TopLevel> tlMap = new();
+    private readonly HashSet<Control> registeredControls = [];
     private readonly Subject<(TextBox TextBox, bool DesiredState)> keyboard = new();
+    private bool _occlusionManagerRegistered;
 
     // ReSharper disable once MemberCanBePrivate.Global
     protected bool IsIntegrated { get; set; }
@@ -32,36 +35,32 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
     public ITabTip TabTip { get; set; } = tabTip;
     public PointerType[] Triggers { get; set; } = [PointerType.Touch, PointerType.Pen];
 
-    public virtual void Integrate()
+    /// <inheritdoc />
+    public void Register(Control control)
     {
+        if (!IsIntegrated)
+        {
+            Integrate(false);
+        }
+
+        registeredControls.Add(control);
+    }
+
+    private bool IsChildOfRegisteredControls(TextBox eventingTextBox) =>
+        registeredControls.Any(c => c == eventingTextBox || c.IsVisualAncestorOf(eventingTextBox));
+
+    public virtual void Integrate(bool global = true)
+    {
+        RegisterOcclusionManager();
+
         if (IsIntegrated)
             return;
         IsIntegrated = true;
 
-        Control.LoadedEvent.AddClassHandler<TopLevel>((s, e) =>
-        {
-            var input = s.InputPane;
-            if (input == null)
-                return;
-
-            tlMap[input] = s;
-            input.StateChanged += InputPaneStateChanged;
-        }, handledEventsToo: true);
-
-        Control.UnloadedEvent.AddClassHandler<TopLevel>((s, e) =>
-        {
-            var input = s.InputPane;
-            if (input == null)
-                return;
-
-            input.StateChanged -= InputPaneStateChanged;
-            tlMap.Remove(input);
-        }, handledEventsToo: true);
-
         InputElement.PointerPressedEvent.AddClassHandler<TextBox>((t, e) =>
         {
             // Check if we should trigger the tabtip or short-circuit early.
-            if (ShouldTrigger(e.Pointer.Type))
+            if (ShouldTrigger(e.Pointer.Type) && (global || IsChildOfRegisteredControls(t)))
             {
                 keyboard.OnNext((t, true));
             }
@@ -101,10 +100,37 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
         });
     }
 
-    // TODO: Make configurable so that we can still trigger the tabtip even when a hardware keyboard is connected.
+    private void RegisterOcclusionManager()
+    {
+        if (_occlusionManagerRegistered)
+            return;
+
+        _occlusionManagerRegistered = true;
+
+        Control.LoadedEvent.AddClassHandler<TopLevel>((s, e) =>
+        {
+            var input = s.InputPane;
+            if (input == null)
+                return;
+
+            tlMap[input] = s;
+            input.StateChanged += InputPaneStateChanged;
+        }, handledEventsToo: true);
+
+        Control.UnloadedEvent.AddClassHandler<TopLevel>((s, e) =>
+        {
+            var input = s.InputPane;
+            if (input == null)
+                return;
+
+            input.StateChanged -= InputPaneStateChanged;
+            tlMap.Remove(input);
+        }, handledEventsToo: true);
+    }
+
     private bool ShouldTrigger(PointerType pointerType) => Triggers.Contains(pointerType);
-        // TODO: once we figure out how to check for hardware keyboards, replace with the below line.
-        // Triggers.Contains(pointerType) && !TabTip.Keyboard.IsHardwareKeyboardConnected();
+    // TODO: once we figure out how to check for hardware keyboards, replace with the below line.
+    // Triggers.Contains(pointerType) && !TabTip.Keyboard.IsHardwareKeyboardConnected();
 
     // Shift content from behind the osk. Could shift the entire window instead.
     //

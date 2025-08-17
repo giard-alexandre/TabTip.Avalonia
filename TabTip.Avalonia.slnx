@@ -1,6 +1,7 @@
 ﻿<Solution>
   <Folder Name="/demo/">
     <Project Path="demo\Demo\Demo.csproj" Type="Classic C#" />
+    <Project Path="demo\Targeted.Demo\Targeted.Demo.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src\TabTip.Avalonia\TabTip.Avalonia.csproj" Type="Classic C#" />
