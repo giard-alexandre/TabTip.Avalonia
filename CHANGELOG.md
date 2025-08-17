@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/giard-alexandre/TabTip.Avalonia/compare/v0.3.1...v0.4.0) (2025-08-17)
+
+
+### 🚀 Features
+
+* add integrate functionality ([eaa79a1](https://github.com/giard-alexandre/TabTip.Avalonia/commit/eaa79a15b5c99d217e34d55577c57bc8169b6b2f))
+* add targeted registration demo ([9cf22c6](https://github.com/giard-alexandre/TabTip.Avalonia/commit/9cf22c6b156b1e9b069f59bdab1b903702fa7e90))
+
 ## [0.3.1](https://github.com/giard-alexandre/TabTip.Avalonia/compare/v0.3.0...v0.3.1) (2025-07-13)
 
 
