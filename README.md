@@ -62,8 +62,34 @@ public override void OnFrameworkInitializationCompleted()
 }
 ```
 
-Once the TabTipManager has been integrated into the app, you only need to explicitly register the TextBox that you want to
-trigger the TabTip for. This can be done by calling `TabTipManager.Register(TextBox)` as follows:
+Once the TabTipManager has been integrated into the app, you need to explicitly register the controls that you want to
+trigger the TabTip for. You can do this in two ways:
+
+### Using Attached Property (Recommended)
+
+You can register controls directly in XAML using the `TabTipManager.IsRegistered` attached property:
+
+```xaml
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:tabTip="clr-namespace:TabTip.Avalonia;assembly=TabTip.Avalonia">
+
+    <!-- Register a TextBox -->
+    <TextBox tabTip:TabTipManager.IsRegistered="True" />
+
+    <!-- Register a NumericUpDown (even though it's not itself a TextBox, any child TextBox will trigger TabTip) -->
+    <NumericUpDown tabTip:TabTipManager.IsRegistered="True" />
+
+    <!-- Register a parent control - all child TextBoxes will trigger TabTip -->
+    <StackPanel tabTip:TabTipManager.IsRegistered="True">
+        <TextBox />
+        <AutoCompleteBox />
+    </StackPanel>
+</Window>
+```
+
+### Using Code-Behind
+
+Alternatively, you can register controls programmatically by calling `TabTipManager.Register(Control)`:
 
 ```csharp
 // In this example, this is inside of a `Control`, so we need to override `OnApplyTemplate`
@@ -71,9 +97,9 @@ trigger the TabTip for. This can be done by calling `TabTipManager.Register(Text
 protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
 {
     base.OnApplyTemplate(e);
-    
+
     TabTipManager.Register(IntegratedTextBox);
-    
+
     // Even though `NumericUpDown` is not itself a TextBox, we can still register it as the `Register` command will allow
     // any child TextBox of the registered control to trigger the TabTip. This applies to any control.
     TabTipManager.Register(IntegratedNumericUpDown);
@@ -152,12 +178,12 @@ Since this project was heavily inspired by the WPF version, the name is also ins
 ### Roadmap (non-binding 🙃)
 
 1. Make it possible to detect if a Hardware Keyboard is connected.
-2. Add a method like `Integrate` which allows us to specify a specific control so that it integrates it and all its
-   children **only**.
+2. ~~Add a method like `Integrate` which allows us to specify a specific control so that it integrates it and all its
+   children **only**.~~
     - ex: `Integrate(MyCustomControlReference)` would trigger for that control and all its children, but not any other
       controls in the app.
-3. Add an AttachedProperty or something that will integrate the control it's attached to. Not sure if this is an
+3. ~~Add an AttachedProperty or something that will integrate the control it's attached to. Not sure if this is an
    attached property or not but basically, the same
-   way [ToolTip](https://docs.avaloniaui.net/docs/reference/controls/tooltip) works.
+   way [ToolTip](https://docs.avaloniaui.net/docs/reference/controls/tooltip) works.~~ ✅ **Completed** - Added `TabTipManager.IsRegistered` attached property
 4. Add code to add the relevant interfaces/classes to DI using `Microsoft.Extensions.DependencyInjection`
 5. Add support for Linux?

@@ -19,9 +19,6 @@ public partial class MainWindow : Window
         base.OnApplyTemplate(e);
         
         TabTipManager.Register(IntegratedTextBox);
-        TabTipManager.Register(IntegratedNumericUpDown);
-        TabTipManager.Register(IntegratedAutoCompleteBox);
-        TabTipManager.Register(IntegrateHeaderedContentControl);
     }
 
     private void Button_OnClick(object? sender, RoutedEventArgs e)
