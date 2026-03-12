@@ -2,9 +2,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:tabTip="clr-namespace:TabTip.Avalonia;assembly=TabTip.Avalonia"
         SizeToContent="WidthAndHeight"
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
-        MinWidth="300" MinHeight="300"
+        MinWidth="500" MinHeight="300"
         x:Class="Targeted.Demo.MainWindow"
         Title="Targeted.Demo">
     <StackPanel Spacing="5">
@@ -16,23 +17,23 @@
                 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Not Integrated" />
                 <TextBox Grid.Row="1" Grid.Column="1">Write in Me</TextBox>
-                
+
                 <!-- NumericUpDown -->
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Integrated" />
-                <NumericUpDown Grid.Row="2" Grid.Column="1" Name="IntegratedNumericUpDown" />
-                
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Integrated|Attached Prop" />
+                <NumericUpDown Grid.Row="2" Grid.Column="1" tabTip:TabTipManager.IsRegistered="True" />
+
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Not Integrated" />
                 <NumericUpDown Grid.Row="3" Grid.Column="1" />
-                
+
                 <!-- AutoCompleteBox -->
-                <TextBlock Grid.Row="4" Grid.Column="0" Text="Integrated" />
-                <AutoCompleteBox Grid.Row="4" Grid.Column="1" Name="IntegratedAutoCompleteBox" />
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Integrated|Attached Prop" />
+                <AutoCompleteBox Grid.Row="4" Grid.Column="1" tabTip:TabTipManager.IsRegistered="True" />
                 
                 <TextBlock Grid.Row="5" Grid.Column="0" Text="Not Integrated" />
                 <AutoCompleteBox Grid.Row="5" Grid.Column="1" />
             </Grid>
         </HeaderedContentControl>
-        <HeaderedContentControl Header="Children Open TabTip" Name="IntegrateHeaderedContentControl">
+        <HeaderedContentControl Header="Children Open TabTip|Attahced Prop" tabTip:TabTipManager.IsRegistered="True">
             <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="5" ColumnSpacing="5">
                 <TextBox Grid.Row="1" Grid.Column="1">Write in Me</TextBox>
                 
