@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/giard-alexandre/TabTip.Avalonia/compare/v0.4.0...v0.5.0) (2026-03-12)
+
+
+### 🚀 Features
+
+* add attached property ([d7f13d3](https://github.com/giard-alexandre/TabTip.Avalonia/commit/d7f13d378441388085ed33c3f99cd556b21ab625))
+
 ## [0.4.0](https://github.com/giard-alexandre/TabTip.Avalonia/compare/v0.3.1...v0.4.0) (2025-08-17)
 
 
