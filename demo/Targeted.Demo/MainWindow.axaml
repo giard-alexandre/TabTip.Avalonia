@@ -16,7 +16,7 @@
                 <TextBox Grid.Row="0" Grid.Column="1" Name="IntegratedTextBox">Write in Me</TextBox>
                 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Not Integrated" />
-                <TextBox Grid.Row="1" Grid.Column="1">Write in Me</TextBox>
+                <TextBox Grid.Row="1" Grid.Column="1" Name="NotIntegratedTextBox">Write in Me</TextBox>
 
                 <!-- NumericUpDown -->
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Integrated|Attached Prop" />
@@ -72,6 +72,13 @@
         
         
         
+        <HeaderedContentControl Header="Programmatic Focus">
+            <StackPanel Spacing="5">
+                <Button Click="FocusIntegratedButton_OnClick">Focus Integrated TextBox from code (opens keyboard)</Button>
+                <Button Click="FocusNotIntegratedButton_OnClick">Focus Not-Integrated TextBox from code (does NOT open keyboard)</Button>
+            </StackPanel>
+        </HeaderedContentControl>
+
         <Button Click="Button_OnClick">Manually Toggle TapTip</Button>
     </StackPanel>
 </Window>

@@ -66,6 +66,20 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
             }
         }, handledEventsToo: true);
 
+        // Programmatic focus (Control.Focus() with no args) arrives as NavigationMethod.Unspecified,
+        // which never produces a PointerPressed event. Handle it here so code-driven focus also opens
+        // the keyboard - but only if no hardware keyboard is connected, since Triggers can't gate
+        // this path the way it does for pointer events.
+        InputElement.GotFocusEvent.AddClassHandler<TextBox>((t, e) =>
+        {
+            if (e.NavigationMethod == NavigationMethod.Unspecified
+                && !TabTip.Keyboard.IsHardwareKeyboardConnected()
+                && (global || IsChildOfRegisteredControls(t)))
+            {
+                keyboard.OnNext((t, true));
+            }
+        }, handledEventsToo: true);
+
         InputElement.LostFocusEvent.AddClassHandler<TextBox>((t, _) => keyboard.OnNext((t, false)),
             handledEventsToo: true);
 
