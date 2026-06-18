@@ -14,14 +14,19 @@ public partial class MainWindow : Window
 
     private void Button_OnClick(object? sender, RoutedEventArgs e)
     {
-        TopLevel? tl = GetTopLevel(this);
+        var tl = GetTopLevel(this);
         if (tl == null)
             return;
 
-        IntPtr hwnd = tl.TryGetPlatformHandle()?.Handle ?? IntPtr.Zero;
+        var hwnd = tl.TryGetPlatformHandle()?.Handle ?? IntPtr.Zero;
         if (hwnd == IntPtr.Zero)
             return;
 
         TabTipManager.Toggle(hwnd);
+    }
+
+    private void FocusTextBoxButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        GlobalTextBox.Focus();
     }
 }

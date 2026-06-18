@@ -10,7 +10,7 @@
     <StackPanel Spacing="5">
         <HeaderedContentControl Header="Opens TabTip">
             <StackPanel Spacing="5">
-                <TextBox>Write in Me</TextBox>
+                <TextBox Name="GlobalTextBox">Write in Me</TextBox>
                 <NumericUpDown />
                 <AutoCompleteBox />
             </StackPanel>
@@ -45,6 +45,7 @@
         
         
         
+        <Button Click="FocusTextBoxButton_OnClick">Focus TextBox from code</Button>
         <Button Click="Button_OnClick">Manually Toggle TapTip</Button>
     </StackPanel>
 </Window>

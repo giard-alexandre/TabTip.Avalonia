@@ -33,4 +33,14 @@ public partial class MainWindow : Window
 
         TabTipManager.Toggle(hwnd);
     }
+
+    private void FocusIntegratedButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        IntegratedTextBox.Focus();
+    }
+
+    private void FocusNotIntegratedButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        NotIntegratedTextBox.Focus();
+    }
 }

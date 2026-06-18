@@ -8,6 +8,7 @@ namespace TabTip.Avalonia.TabTip;
 public class WindowsTabTip : ITabTip
 {
     public IHardwareKeyboard Keyboard { get; } = new WindowsHardwareKeyboard();
+    public ISessionInfo Session { get; } = new WindowsSessionInfo();
 
     public void Toggle(IntPtr hwnd)
     {
