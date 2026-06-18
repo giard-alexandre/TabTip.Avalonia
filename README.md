@@ -9,10 +9,10 @@
 > that came to be after I stumbled upon [this discussion in the Avalonia repo](https://github.com/AvaloniaUI/Avalonia/issues/10136)
 
 > [!NOTE]  
-> Currently, the Software Keyboard is only supported on Windows and the default `TabTipIntegration` triggers based
-> **only** on the PointerType that is used when clicking a TextBox. This is all configurable. In the future, I'm looking
-> to add some functionality to allow detecting whether a hardware keyboard is connected so that we can forgo triggering
-> the software keyboard if the hardware keyboard is connected.
+> The Software Keyboard is only supported on Windows. Two trigger policies ship out of the
+> box: `PointerOnlyTriggerPolicy` (default — gate on PointerType) and
+> `KeyboardDetectionTriggerPolicy` (skip the keyboard when a hardware keyboard is detected,
+> open on any focus otherwise). See [Software Keyboard Trigger](#software-keyboard-trigger).
 
 # Usage
 
@@ -32,7 +32,7 @@ public override void OnFrameworkInitializationCompleted()
     // ...
 
     // Integrate the tabtip manager into the entire app.
-    TabTipManager.Integrate(); // (defaults to `true` for the `Integrate(bool global)` parameter.)
+    TabTipManager.Integrate(new PointerOnlyTriggerPolicy()); // Global = true is the default.
 
     // ...
 }
@@ -41,8 +41,8 @@ public override void OnFrameworkInitializationCompleted()
 This will integrate the `TabTipManager` into the entire app, causing it to trigger the TabTip for any TextBox that is clicked.
 
 ## Targeted Integration
-Just like for the [Global Integration](#gloabl-integration), we need to add a line to `App.xaml.cs`, but this time, we pass in
-`false` for the `global` parameter. This will only integrate the `TabTipManager` but prevent it from triggering the TabTip
+Just like for the [Global Integration](#gloabl-integration), we need to add a line to `App.xaml.cs`, but this time, we set
+`Global = false` on the policy. This will only integrate the `TabTipManager` but prevent it from triggering the TabTip
 indiscriminately for any TextBox that is clicked:
 
 ```csharp
@@ -55,8 +55,8 @@ public override void OnFrameworkInitializationCompleted()
 {
     // ...
 
-    // Integrate the tabtip manager into the entire app but don't trigger unless a textbox is registered.
-    TabTipManager.Integrate(false);
+    // Only TextBoxes whose ancestor was passed to TabTipManager.Register(...) trigger.
+    TabTipManager.Integrate(new PointerOnlyTriggerPolicy { Global = false });
 
     // ...
 }
@@ -108,15 +108,53 @@ protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
 
 
 ## Software Keyboard Trigger
-By default, the software keyboard is only opened if the PointerType used when clicking is either `PointerType.Touch` or
-`PointerType.Pen`.
-If you would like to use any other setting, provide an array of `PointerType`s that you want to trigger the software
-keyboard as below:
+`TabTipManager.Integrate(...)` requires a `TabTipTriggerPolicy` that decides how the keyboard
+gets triggered. Two subclasses ship with the library:
 
-```csharp
-// Trigger on all pointer types.
-TabTipManager.OverrideIntegrationTrigger([PointerType.Touch, PointerType.Mouse, PointerType.Pen]);
-```
+### `PointerOnlyTriggerPolicy` (Legacy method)
+> opens on configured pointer types (Touch + Pen by default).
+
+> [!NOTE]
+> This method depends on a pointer pressed event, which means that focusing a TextBox from code-behind will NOT trigger
+> the TabTip to open.
+
+  Customize the pointer set via the `Triggers` property:
+  ```csharp
+  TabTipManager.Integrate(new PointerOnlyTriggerPolicy
+  {
+      Triggers = [PointerType.Touch, PointerType.Mouse, PointerType.Pen],
+  });
+  ```
+### `KeyboardDetectionTriggerPolicy`
+— "just integrate" mode. Opens the keyboard on any
+
+> [!NOTE]
+> This method is the preferred way since V2.0 and supports programmatic focusing of TextBoxes.
+
+  TextBox focus (pointer *or* programmatic) unless a keyboard the caller cares about is
+  attached. Best for convertible / 2-in-1 devices that switch modes at runtime.
+  ```csharp
+  // Default: only suppress when an external (USB / Bluetooth / Type Cover) keyboard is
+  // attached. Built-in laptop keyboards are ignored (so a 2-in-1 in tablet mode still
+  // pops the OSK even though its hinge keyboard is technically still enumerated).
+  TabTipManager.Integrate(new KeyboardDetectionTriggerPolicy());
+
+  // Strict: also suppress when a built-in keyboard is detected.
+  TabTipManager.Integrate(new KeyboardDetectionTriggerPolicy
+  {
+      SuppressOn = HardwareKeyboardType.Physical | HardwareKeyboardType.BuiltIn,
+  });
+  ```
+  Remote sessions (RDP, RemoteApp) are suppressed by default — the remote user's local input
+  devices aren't visible from inside the session. Set `SuppressOnRemoteSession = false` to
+  decide purely on attached keyboards.
+
+Both expose `Global` (default `true`) — set to `false` to require explicit registration.
+
+> **Note:** `PointerOnlyTriggerPolicy` ignores programmatic focus by design. A code-driven
+> `control.Focus()` produces no pointer event, and there is no pointer-type signal to gate on,
+> so this policy doesn't subscribe to focus events at all. Use `KeyboardDetectionTriggerPolicy`
+> if you need the keyboard to open on programmatic focus.
 
 ## TabTip Factory
 The `ITabTipFactory` interface allows you to provide your own implementation of the `ITabTip` interface, giving you the flexibility to create it based

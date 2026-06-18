@@ -7,19 +7,24 @@ namespace TabTip.Avalonia.TabTip;
 public class WindowsHardwareKeyboard : IHardwareKeyboard
 {
     /// <summary>
-    /// Returns true when at least one keyboard the OS reports is a real, physical device.
-    /// Backed by Raw Input — devices disappear from this list when physically detached
-    /// (e.g. a Surface Type Cover folded back), making it more reliable than WMI for hot-plug.
+    /// Walks every Raw Input keyboard the OS currently reports, drops the virtual ones, and
+    /// returns the bitmask of remaining categories. Backed by Raw Input — devices disappear
+    /// from this list when physically detached (e.g. a Surface Type Cover folded back),
+    /// making it more reliable than WMI for hot-plug.
     /// </summary>
-    public bool IsHardwareKeyboardConnected()
+    public HardwareKeyboardType GetConnected()
     {
+        var connected = HardwareKeyboardType.None;
         foreach (var name in EnumerateKeyboardDeviceNames())
         {
-            if (!IsVirtualDevice(name))
-                return true;
+            connected |= Classify(name);
+
+            // Once both flags are set we can't learn anything more by looking at remaining devices.
+            if (connected == (HardwareKeyboardType.Physical | HardwareKeyboardType.BuiltIn))
+                break;
         }
 
-        return false;
+        return connected;
     }
 
     /// <summary>
@@ -50,28 +55,39 @@ public class WindowsHardwareKeyboard : IHardwareKeyboard
     // false-positive enumerator IDs here when they're discovered.
     private static readonly string[] VirtualMarkers =
     [
-        "RDP_KBD", // Remote Desktop stub, present on every Windows install.
+        "RDP_KBD",         // Remote Desktop stub, present on every Windows install.
         "ConvertedDevice", // kbdhid.sys wrapper over the legacy i8042 controller — present on every PC chipset.
     ];
 
     /// <summary>
-    /// Returns true if a PnP device name corresponds to a known software/synthetic keyboard
-    /// rather than a real attached one. Substrings (RDP_KBD / ConvertedDevice) are checked
-    /// first because they appear inside otherwise-real-looking <c>HID#</c> paths; <c>ROOT#</c>
-    /// is the PnP root enumerator, reserved for synthetic devices.
+    /// Maps a PnP device name to a category. Returns <see cref="HardwareKeyboardType.None"/>
+    /// for known synthetic devices (RDP_KBD, ConvertedDevice, ROOT#-enumerated). Substring
+    /// markers are checked first because they appear inside otherwise-real-looking <c>HID#</c>
+    /// paths (notably <c>HID#ConvertedDevice</c>).
     /// </summary>
-    private static bool IsVirtualDevice(string name)
+    private static HardwareKeyboardType Classify(string name)
     {
         if (string.IsNullOrEmpty(name))
-            return true;
+            return HardwareKeyboardType.None;
 
         foreach (var marker in VirtualMarkers)
         {
             if (name.Contains(marker, StringComparison.OrdinalIgnoreCase))
-                return true;
+                return HardwareKeyboardType.None;
         }
 
-        return name.StartsWith(@"\\?\ROOT#", StringComparison.OrdinalIgnoreCase);
+        // ROOT# is the PnP root enumerator, reserved for synthetic / driver-injected devices.
+        if (name.StartsWith(@"\\?\ROOT#", StringComparison.OrdinalIgnoreCase))
+            return HardwareKeyboardType.None;
+
+        // ACPI# is the ACPI enumerator — built-in laptop / tablet chassis keyboards.
+        if (name.StartsWith(@"\\?\ACPI#", StringComparison.OrdinalIgnoreCase))
+            return HardwareKeyboardType.BuiltIn;
+
+        // Treat everything else (HID#, including USB / Bluetooth / Surface Type Cover) as
+        // an external physical keyboard. We don't require a VID/PID here because some
+        // legitimate HID keyboards (notably bus-attached embedded boards) omit them.
+        return HardwareKeyboardType.Physical;
     }
 
     /// <summary>

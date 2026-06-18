@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using TabTip.Avalonia.TabTip;
 
 namespace TabTip.Avalonia;
@@ -45,9 +44,17 @@ public static class TabTipManager
         _integration.Register(control);
     }
 
-    public static void Integrate(bool global = true)
+    /// <summary>
+    /// Wires the integration up using the supplied trigger policy. Pass a
+    /// <see cref="PointerOnlyTriggerPolicy"/> for the default pointer-driven behavior (Touch
+    /// + Pen by default; programmatic focus is not handled), or a
+    /// <see cref="KeyboardDetectionTriggerPolicy"/> to open on any TextBox focus when no
+    /// hardware keyboard is detected. Set <see cref="TabTipTriggerPolicy.Global"/> to
+    /// <c>false</c> to limit triggering to controls passed to <see cref="Register"/>.
+    /// </summary>
+    public static void Integrate(TabTipTriggerPolicy policy)
     {
-        _integration.Integrate(global);
+        _integration.Integrate(policy);
     }
 
     public static void Toggle(IntPtr hwnd)
@@ -70,10 +77,5 @@ public static class TabTipManager
     public static void OverrideIntegration(ITabTipIntegration integration)
     {
         _integration = integration;
-    }
-
-    public static void OverrideIntegrationTrigger(PointerType[] triggers)
-    {
-        _integration.Triggers = triggers;
     }
 }

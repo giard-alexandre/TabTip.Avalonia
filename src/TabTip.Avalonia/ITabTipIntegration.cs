@@ -1,18 +1,23 @@
 using Avalonia.Controls;
-using Avalonia.Input;
 using TabTip.Avalonia.TabTip;
 
 namespace TabTip.Avalonia;
 
 public interface ITabTipIntegration
 {
-    void Integrate(bool global = true);
+    /// <summary>
+    /// Wires up the Avalonia event handlers that drive the on-screen keyboard. The set of
+    /// events subscribed to is determined by the concrete <see cref="TabTipTriggerPolicy"/>
+    /// subtype, so the policy must be supplied here rather than configured later.
+    /// </summary>
+    void Integrate(TabTipTriggerPolicy policy);
+
+    /// <summary>
+    /// Marks a control whose TextBox descendants should trigger the keyboard. Only meaningful
+    /// when the supplied policy has <see cref="TabTipTriggerPolicy.Global"/> set to
+    /// <c>false</c>; in global mode every TextBox in the app already triggers.
+    /// </summary>
     void Register(Control control);
 
     ITabTip TabTip { get; set; }
-    
-    /// <summary>
-    /// The <see cref="PointerType"/>s that will trigger the logic to check if we open the <see cref="TabTip"/>.
-    /// </summary>
-    PointerType[] Triggers { get; set; }
 }

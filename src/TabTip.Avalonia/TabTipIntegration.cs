@@ -33,52 +33,70 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
     protected bool IsIntegrated { get; set; }
 
     public ITabTip TabTip { get; set; } = tabTip;
-    public PointerType[] Triggers { get; set; } = [PointerType.Touch, PointerType.Pen];
 
     /// <inheritdoc />
     public void Register(Control control)
     {
-        if (!IsIntegrated)
-        {
-            Integrate(false);
-        }
-
         registeredControls.Add(control);
     }
 
     private bool IsChildOfRegisteredControls(TextBox eventingTextBox) =>
         registeredControls.Any(c => c == eventingTextBox || c.IsVisualAncestorOf(eventingTextBox));
 
-    public virtual void Integrate(bool global = true)
+    public virtual void Integrate(TabTipTriggerPolicy policy)
     {
+        ArgumentNullException.ThrowIfNull(policy);
+
         RegisterOcclusionManager();
 
         if (IsIntegrated)
             return;
         IsIntegrated = true;
 
-        InputElement.PointerPressedEvent.AddClassHandler<TextBox>((t, e) =>
-        {
-            // Check if we should trigger the tabtip or short-circuit early.
-            if (ShouldTrigger(e.Pointer.Type) && (global || IsChildOfRegisteredControls(t)))
-            {
-                keyboard.OnNext((t, true));
-            }
-        }, handledEventsToo: true);
+        var global = policy.Global;
 
-        // Programmatic focus (Control.Focus() with no args) arrives as NavigationMethod.Unspecified,
-        // which never produces a PointerPressed event. Handle it here so code-driven focus also opens
-        // the keyboard - but only if no hardware keyboard is connected, since Triggers can't gate
-        // this path the way it does for pointer events.
-        InputElement.GotFocusEvent.AddClassHandler<TextBox>((t, e) =>
+        switch (policy)
         {
-            if (e.NavigationMethod == NavigationMethod.Unspecified
-                && !TabTip.Keyboard.IsHardwareKeyboardConnected()
-                && (global || IsChildOfRegisteredControls(t)))
-            {
-                keyboard.OnNext((t, true));
-            }
-        }, handledEventsToo: true);
+            case PointerOnlyTriggerPolicy pointerPolicy:
+                // Pointer-only: gate on the configured pointer types. Programmatic focus is
+                // not handled in this mode — see PointerOnlyTriggerPolicy remarks.
+                InputElement.PointerPressedEvent.AddClassHandler<TextBox>((t, e) =>
+                {
+                    if (pointerPolicy.Triggers.Contains(e.Pointer.Type)
+                        && (global || IsChildOfRegisteredControls(t)))
+                    {
+                        keyboard.OnNext((t, true));
+                    }
+                }, handledEventsToo: true);
+                break;
+
+            case KeyboardDetectionTriggerPolicy detectionPolicy:
+                // Keyboard-detection: focus is the only signal we need. Open whenever a
+                // TextBox gets focus (pointer or programmatic) and neither a configured
+                // keyboard category nor a remote session is suppressing. Pointer presses
+                // aren't subscribed to in this mode.
+                InputElement.GotFocusEvent.AddClassHandler<TextBox>((t, _) =>
+                {
+                    if (detectionPolicy.SuppressOnRemoteSession && TabTip.Session.IsRemoteSession())
+                        return;
+
+                    var connected = TabTip.Keyboard.GetConnected();
+                    if ((connected & detectionPolicy.SuppressOn) == HardwareKeyboardType.None
+                        && (global || IsChildOfRegisteredControls(t)))
+                    {
+                        keyboard.OnNext((t, true));
+                    }
+                }, handledEventsToo: true);
+                break;
+
+            default:
+                // Defensive: TabTipTriggerPolicy has a private protected ctor so external
+                // subclasses can't reach it, but a same-assembly addition would slip past
+                // the type system here. Fail loudly rather than silently no-op.
+                throw new NotSupportedException(
+                    $"Unsupported trigger policy: {policy.GetType().FullName}. " +
+                    $"Use {nameof(PointerOnlyTriggerPolicy)} or {nameof(KeyboardDetectionTriggerPolicy)}.");
+        }
 
         InputElement.LostFocusEvent.AddClassHandler<TextBox>((t, _) => keyboard.OnNext((t, false)),
             handledEventsToo: true);
@@ -141,10 +159,6 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
             tlMap.Remove(input);
         }, handledEventsToo: true);
     }
-
-    private bool ShouldTrigger(PointerType pointerType) => Triggers.Contains(pointerType);
-    // TODO: once we figure out how to check for hardware keyboards, replace with the below line.
-    // Triggers.Contains(pointerType) && !TabTip.Keyboard.IsHardwareKeyboardConnected();
 
     // Shift content from behind the osk. Could shift the entire window instead.
     //

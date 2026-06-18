@@ -1,12 +1,14 @@
 namespace TabTip.Avalonia.TabTip;
 
 /// <summary>
-/// Defines a service to detect the presence of a hardware keyboard.
+/// Defines a service to detect the presence of hardware keyboards.
 /// </summary>
 public interface IHardwareKeyboard
 {
     /// <summary>
-    /// Gets a value indicating whether a physical hardware keyboard is connected.
+    /// Returns the bitmask of <see cref="HardwareKeyboardType"/>s currently attached to
+    /// the device. Returns <see cref="HardwareKeyboardType.None"/> when nothing physical
+    /// is detected.
     /// </summary>
-    bool IsHardwareKeyboardConnected();
+    HardwareKeyboardType GetConnected();
 }
