@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.0](https://github.com/giard-alexandre/TabTip.Avalonia/compare/v1.0.0...v2.0.0) (2026-06-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* use new keyboard detection
+
+### 🚀 Features
+
+* add keyboard detection on windows ([252c576](https://github.com/giard-alexandre/TabTip.Avalonia/commit/252c57640998efbae0dd34887d4fea932d3c1671))
+* use new keyboard detection ([2d3a6aa](https://github.com/giard-alexandre/TabTip.Avalonia/commit/2d3a6aa2fa9dca5472f3f530bb0185f51590a316))
+
 ## [1.0.0](https://github.com/giard-alexandre/TabTip.Avalonia/compare/v0.5.0...v1.0.0) (2026-05-15)
 
 
