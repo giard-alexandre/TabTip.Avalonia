@@ -4,7 +4,7 @@ using System.Runtime.Versioning;
 namespace TabTip.Avalonia.TabTip;
 
 [SupportedOSPlatform("windows")]
-public class WindowsHardwareKeyboard : IHardwareKeyboard
+public partial class WindowsHardwareKeyboard : IHardwareKeyboard
 {
     /// <summary>
     /// Walks every Raw Input keyboard the OS currently reports, drops the virtual ones, and
@@ -130,14 +130,17 @@ public class WindowsHardwareKeyboard : IHardwareKeyboard
         public uint dwType;
     }
 
-    [DllImport("user32.dll")]
-    private static extern uint GetRawInputDeviceList(
-        [In, Out] RAWINPUTDEVICELIST[]? RawInputDeviceList,
+    [LibraryImport("user32.dll")]
+    private static partial uint GetRawInputDeviceList(
+        [Out] RAWINPUTDEVICELIST[]? RawInputDeviceList,
         ref uint NumDevices,
         uint Size);
 
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-    private static extern uint GetRawInputDeviceInfo(
+    // EntryPoint pinned to the W variant: the previous CharSet.Unicode was only acting as
+    // an A/W lookup hint, not for string marshalling — we pass IntPtr buffers, no strings
+    // cross the boundary.
+    [LibraryImport("user32.dll", EntryPoint = "GetRawInputDeviceInfoW")]
+    private static partial uint GetRawInputDeviceInfo(
         IntPtr hDevice,
         uint uiCommand,
         IntPtr pData,
