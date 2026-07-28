@@ -151,7 +151,7 @@ public class TabTipIntegration(ITabTip tabTip) : ITabTipIntegration
 
         Control.UnloadedEvent.AddClassHandler<TopLevel>((s, e) =>
         {
-            var input = s.InputPane;
+            var input = tlMap.FirstOrDefault(x => x.Value == s).Key;
             if (input == null)
                 return;
 
